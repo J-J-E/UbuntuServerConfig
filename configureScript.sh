@@ -22,7 +22,7 @@ AUTO_REMOVE=false
 
 #Auto Mount network drive, suppy path and true/false
 AUTO_MOUNT_NFS=false
-NFS_PATH="0.144.228.2:/filmla /nfs nfs defaults 0 0"
+NFS_PATH=""
 
 
 # build-essential, git, curl, libs
