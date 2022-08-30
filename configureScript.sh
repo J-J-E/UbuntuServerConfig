@@ -169,7 +169,7 @@ fi
 
 if $CONFIGURE_GITHUB
 then
-  sudo rm $GITCONFIG
+  sudo rm $GITCONFIG || echo "$GITCONFIG didn't exist, couldn't remove. Continuing."
   sudo touch $GITCONFIG
   sudo chmod 777 $GITCONFIG
   echo -e "[user]" >> $GITCONFIG
