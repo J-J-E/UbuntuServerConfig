@@ -96,7 +96,7 @@ fi
 if $AUTO_REMOVE
 then
   echo "*** Set AUTOREMOVE"
-  sudo apt auto remove -y
+  sudo apt autoremove -y
 fi
 
 
@@ -152,7 +152,7 @@ sudo apt-get clean
 if $ADDUSER
 then
 	sudo useradd $USERNAME -m -s /bin/bash
-	sudo echo $USERPASS | passwd $USERNAME --stdin
+	sudo echo $USERPASS | passwd $USERNAME 
 	sudo usermod -aG $USERGRPS $USERNAME
 fi
 
