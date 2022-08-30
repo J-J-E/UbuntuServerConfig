@@ -24,7 +24,6 @@ AUTO_REMOVE=false
 AUTO_MOUNT_NFS=false
 NFS_PATH=""
 
-
 # build-essential, git, curl, libs
 REQUIRED=false
 
@@ -41,6 +40,18 @@ GITHUB_USER="YOUR_USERNAME"
 CONFIGURE_GITLAB=false
 GITLAB_HOSTNAME="YOUR_GITLAB_DOMAIN"
 GITLAB_MAIL="YOUR_GITLAB_EMAIL"
+
+#Additional Repos:
+DOCKER=false
+DOCKERIO=false
+DOCKERCOMPOSE=false
+
+#Add User
+ADDUSER=false
+USERNAME=
+USERPASS=
+USERGRPS="adm,sudo"
+
 
 # paths
 LOG_SCRIPT=./log_script.txt
@@ -103,6 +114,21 @@ then
 	aptinstall CURL curl
 fi
 
+if $DOCKER
+then
+	aptinstall Docker docker
+fi
+
+if $DOCKERIO
+then
+	aptinstall DockerIO docker.io
+fi
+
+if $DOCKERCOMPOSE
+then
+	aptinstall Docker Compose docker-compose
+fi
+
 
 if $COLORIZE_TERMINAL
 then
@@ -121,6 +147,14 @@ fi
 
 echo "*** cleaning packages"
 sudo apt-get clean
+
+
+if $ADDUSER
+then
+	sudo useradd $USERNAME -m -s /bin/bash
+	sudo echo $USERPASS | passwd $USERNAME --stdin
+	sudo usermod -aG $USERGRPS $USERNAME
+fi
 
 
 if $CONFIGURE_GITHUB
