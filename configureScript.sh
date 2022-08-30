@@ -9,8 +9,6 @@
 #INSTRUCTIONS
 # Change "true" to "false" to ignore software setup
 
-
-#######
 #######
 #######
 
@@ -20,7 +18,14 @@ UPGRADE_PACKAGES=false
 AUTO_CLEAN=false
 AUTO_REMOVE=false
 
+#Additional Repos:
+DOCKER=false
+DOCKERIO=false
+DOCKERCOMPOSE=false
+
+
 #Auto Mount network drive, suppy path and true/false
+MOUNT_NFS=false
 AUTO_MOUNT_NFS=false
 NFS_PATH=""
 
@@ -41,16 +46,45 @@ CONFIGURE_GITLAB=false
 GITLAB_HOSTNAME="YOUR_GITLAB_DOMAIN"
 GITLAB_MAIL="YOUR_GITLAB_EMAIL"
 
-#Additional Repos:
-DOCKER=false
-DOCKERIO=false
-DOCKERCOMPOSE=false
-
 #Add User
 ADDUSER=false
-USERNAME=
+USERNAME=john
 USERPASS=
 USERGRPS="adm,sudo"
+COPYROOTSSH=false
+
+#SSH Configuration
+SETSSH=false
+SSHPORT=22
+ROOTLOGIN=true
+PASSAUTH=true
+
+
+#Firewall Configuration
+# a rule will be auto configured for the ssh if a new default
+# was specified above
+HTTPPORTS=true
+OPENPORTS=
+CLOSEPORTS=
+UFWENABLE=false
+FAIL2BAN=false
+sudo ufw allow 2222/tcp
+sudo ufw allow proto tcp from any to any port 80,443
+#ENABLE FAIL2BAN
+sudo apt install fail2ban
+sudo systemctl enable fail2ban --now
+sudo fail2ban-client status sshd
+
+
+
+#Set Timezone
+SERVERTZ=America/Phoenix
+sudo timedatectl  set-timezone $SERVERTZ
+
+#Set Hostname
+SVRHOSTNM=
+sudo hostnamectl set-hostname  $SVRHOSTNM
+
 
 
 # paths
@@ -60,6 +94,7 @@ SSH_FOLDER=~/.ssh
 SSHCONFIG="$SSH_FOLDER/config"
 DOWNLOADS=~/Downloads
 BASHRC=~/.bashrc
+SSHDCONF=/etc/ssh/sshd_config
 
 
 function aptinstall {
@@ -75,63 +110,53 @@ function snapinstall {
 }
 
 
-if $UPDATE_REPOSITORIES
-then
+if $UPDATE_REPOSITORIES; then
   echo "*** Update Respositories"
   sudo apt-get update
 fi
 
-if $UPGRADE_PACKAGES
-then
+if $UPGRADE_PACKAGES; then
   echo "*** Upgrade Packages"
   sudo apt-get -y upgrade
 fi
 
-if $AUTO_CLEAN
-then
+if $AUTO_CLEAN; then
   echo "*** Set AUTOCLEAN"
   sudo apt autoclean -y
 fi
 
-if $AUTO_REMOVE
-then
+if $AUTO_REMOVE; then
   echo "*** Set AUTOREMOVE"
   sudo apt autoremove -y
 fi
 
 
-if $AUTO_MOUNT_NFS
-then
+if $AUTO_MOUNT_NFS; then
   echo "*** MOUNTING NFS"
   echo $NFS_PATH >> /etc/fstab
 fi
 
 
-if $REQUIRED
-then
+if $REQUIRED; then
 	aptinstall "Build essential" build-essential
 	aptinstall Git git-core
 	aptinstall CURL curl
 fi
 
-if $DOCKER
-then
+if $DOCKER; then
 	aptinstall Docker docker
 fi
 
-if $DOCKERIO
-then
+if $DOCKERIO; then
 	aptinstall DockerIO docker.io
 fi
 
-if $DOCKERCOMPOSE
-then
+if $DOCKERCOMPOSE; then
 	aptinstall Docker Compose docker-compose
 fi
 
 
-if $COLORIZE_TERMINAL
-then
+if $COLORIZE_TERMINAL; then
 	echo -e "function parse_git_branch () {" >> $BASHRC
 	echo -e "  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'" >> $BASHRC
 	echo -e "}" >> $BASHRC
@@ -167,8 +192,7 @@ if $ADDUSER; then
 	fi
 fi
 
-if $CONFIGURE_GITHUB
-then
+if $CONFIGURE_GITHUB;then
   sudo rm $GITCONFIG || echo "$GITCONFIG didn't exist, couldn't remove. Continuing."
   sudo touch $GITCONFIG
   sudo chmod 777 $GITCONFIG
@@ -217,8 +241,7 @@ then
   echo -e "  IdentityFile $SSH_FOLDER/id_rsa_github" >> $SSHCONFIG
 fi
 
-if $CONFIGURE_GITLAB
-then
+if $CONFIGURE_GITLAB;then
   ssh-keygen -t rsa -b 4096 -C "$GITLAB_MAIL" -N "" -f $SSH_FOLDER/id_rsa_gitlab
 	echo ""
 	echo ""
@@ -238,3 +261,23 @@ then
   echo -e "  User git" >> $SSHCONFIG
   echo -e "  IdentityFile $SSH_FOLDER/id_rsa_gitlab" >> $SSHCONFIG
 fi
+
+#CONFIGURE SSHD FILE
+if $SETSSH;then
+	sudo sed -i "s/#Port 22/Port $SSHPORT/" $SSHDCONF
+fi
+
+
+if ! $ROOTLOGIN; then
+	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
+else $ROOTLOGIN; then
+	sudo sed -i "s/PermitRootLogin no/PermitRootLogin yes/" $SSHDCONF
+fi
+
+
+if ! $PASSAUTH; then
+	sudo sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDCONF
+elif $PASSAUTH; then
+	sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDCONF
+fi
+
