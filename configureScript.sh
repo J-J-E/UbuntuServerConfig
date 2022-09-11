@@ -270,6 +270,10 @@ if $UFWSSHRULE;then
 	sudo systemctl reload sshd
 fi
 
+if $UFWENABLE;then
+	yes | sudo ufw enable
+fi
+
 
 if ! $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
