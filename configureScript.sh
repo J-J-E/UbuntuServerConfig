@@ -64,9 +64,7 @@ ALLOWPASSAUTH=true
 # a rule will be auto configured for the ssh if a new default
 # was specified above
 HTTPPORTS=true
-OPENPORTS=
-CLOSEPORTS=
-UFWENABLE=true
+ENABLEUFW=true
 FAIL2BAN=true
 
 #Set Timezone
@@ -270,7 +268,7 @@ if $UFWSSHRULE;then
 	sudo systemctl reload sshd
 fi
 
-if $UFWENABLE;then
+if $ENABLEUFW;then
 	yes | sudo ufw enable
 fi
 
