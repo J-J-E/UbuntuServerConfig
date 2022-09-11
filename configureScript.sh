@@ -171,7 +171,7 @@ if $ADDUSER; then
 			echo "$USERNAME exists!"
 		else
 			pass=$(perl -e 'print crypt($ARGV[0], "password")' $USERPASS)
-			sudo useradd -m -p "$pass" "$USERNAME"
+			sudo useradd -m -s /bin/bash -p "$pass" "$USERNAME"
 			sudo usermod -aG $USERGRPS $USERNAME
 			[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
 			
