@@ -68,14 +68,9 @@ PASSAUTH=true
 HTTPPORTS=true
 OPENPORTS=
 CLOSEPORTS=
-UFWENABLE=false
-FAIL2BAN=false
-sudo ufw allow 2222/tcp
-sudo ufw allow proto tcp from any to any port 80,443
-#ENABLE FAIL2BAN
-sudo apt install fail2ban
-sudo systemctl enable fail2ban --now
-sudo fail2ban-client status sshd
+UFWENABLE=true
+FAIL2BAN=true
+
 
 
 
@@ -185,14 +180,23 @@ if $ADDUSER; then
 			exit 1
 		else
 			pass=$(perl -e 'print crypt($ARGV[0], "password")' $USERPASS)
-			useradd -m -p "$pass" "$USERNAME"
+			useradd -m -g $USERGRPS -p "$pass" "$USERNAME"
 			[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+			
+			if COPYROOTSSH; then 
+				sudo cp /root/.ssh/authorized_keys /home/$USERNAME/.ssh/authorized_keys
+			fi
 		fi
 	else
 		echo "Only root may add a user to the system."
 		exit 2
 	fi
 fi
+
+#Add User
+
+
+COPYROOTSSH=false
 
 if $CONFIGURE_GITHUB;then
   sudo rm $GITCONFIG || echo "$GITCONFIG didn't exist, couldn't remove. Continuing."
