@@ -142,7 +142,7 @@ if $DOCKERIO; then
 fi
 
 if $DOCKERCOMPOSE; then
-	aptinstall Docker Compose docker-compose
+	aptinstall "Docker Compose" docker-compose
 fi
 
 
@@ -177,6 +177,7 @@ if $ADDUSER; then
 			[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
 			
 			if $COPYROOTSSH; then 
+				sudo mkdir -p /home/$USERNAME/.ssh/
 				sudo cp /root/.ssh/authorized_keys /home/$USERNAME/.ssh/authorized_keys
 				sudo chmod 600 /home/$USERNAME/.ssh/authorized_keys
 				sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
@@ -261,10 +262,12 @@ fi
 #CONFIGURE SSHD FILE
 if $SETSSH;then
 	sudo sed -i "s/#Port 22/Port $SSHPORT/" $SSHDCONF
+	sudo systemctl reload sshd
 fi
 
 if $UFWSSHRULE;then
 	sudo ufw allow $SSHPORT/tcp
+	sudo systemctl reload sshd
 fi
 
 
@@ -290,7 +293,7 @@ if $HTTPPORTS;then
 fi
 
 if $FAIL2BAN;then
-	sudo apt install fail2ban -y
+	aptinstall fail2ban fail2ban
 	sudo systemctl enable fail2ban --now
 fi
 
