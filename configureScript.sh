@@ -13,15 +13,15 @@
 #######
 
 # Required only in the first time to execute this script
-UPDATE_REPOSITORIES=false
-UPGRADE_PACKAGES=false
-AUTO_CLEAN=false
-AUTO_REMOVE=false
+UPDATE_REPOSITORIES=true
+UPGRADE_PACKAGES=true
+AUTO_CLEAN=true
+AUTO_REMOVE=true
 
 #Additional Repos:
-DOCKER=false
-DOCKERIO=false
-DOCKERCOMPOSE=false
+DOCKER=true
+DOCKERIO=true
+DOCKERCOMPOSE=true
 
 
 #Auto Mount network drive, suppy path and true/false
@@ -34,7 +34,7 @@ NFS_PATH=""
 REQUIRED=false
 
 # Add color for user, host, folder and git branch
-COLORIZE_TERMINAL=false
+COLORIZE_TERMINAL=true
 
 # Configure GIT
 CONFIGURE_GITHUB=false
@@ -49,7 +49,7 @@ GITLAB_MAIL="YOUR_GITLAB_EMAIL"
 
 #Add User
 ADDUSER=false
-USERNAME=john
+USERNAME=
 USERPASS=
 USERGRPS="adm,sudo"
 COPYROOTSSH=false
@@ -58,8 +58,8 @@ COPYROOTSSH=false
 SETSSH=false
 SSHPORT=22
 UFWSSHRULE=true
-ROOTLOGIN=true
-PASSAUTH=true
+ALLOWROOTLOGIN=true
+ALLOWPASSAUTH=true
 
 
 #Firewall Configuration
@@ -72,17 +72,12 @@ UFWENABLE=true
 FAIL2BAN=true
 
 
-
-
 #Set Timezone
 SERVERTZ=America/Phoenix
-sudo timedatectl  set-timezone $SERVERTZ
+
 
 #Set Hostname
 SVRHOSTNM=
-sudo hostnamectl set-hostname  $SVRHOSTNM
-
-
 
 # paths
 LOG_SCRIPT=./log_script.txt
@@ -278,16 +273,16 @@ if $UFWSSHRULE;then
 fi
 
 
-if ! $ROOTLOGIN; then
+if ! $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
-else $ROOTLOGIN; then
+else $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin no/PermitRootLogin yes/" $SSHDCONF
 fi
 
 
-if ! $PASSAUTH; then
+if ! $ALLOWPASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDCONF
-elif $PASSAUTH; then
+elif $ALLOWPASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDCONF
 fi
 
@@ -304,3 +299,14 @@ if $FAIL2BAN;then
 	sudo systemctl enable fail2ban --now
 fi
 
+
+#Set Timezone
+if $SERVERTZ;then
+	sudo timedatectl set-timezone $SERVERTZ
+fi
+
+
+#Set Hostname
+if $SVRHOSTNM;then
+	sudo hostnamectl set-hostname  $SVRHOSTNM
+fi
