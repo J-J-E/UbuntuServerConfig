@@ -175,10 +175,11 @@ if $ADDUSER; then
 			exit 1
 		else
 			pass=$(perl -e 'print crypt($ARGV[0], "password")' $USERPASS)
-			useradd -m -g $USERGRPS -p "$pass" "$USERNAME"
+			sudo useradd -m -p "$pass" "$USERNAME"
+			sudo usermod -aG $USERGRPS $USERNAME
 			[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
 			
-			if COPYROOTSSH; then 
+			if $COPYROOTSSH; then 
 				sudo cp /root/.ssh/authorized_keys /home/$USERNAME/.ssh/authorized_keys
 				sudo chmod 600 /home/$USERNAME/.ssh/authorized_keys
 				sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
@@ -277,7 +278,7 @@ fi
 
 if ! $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
-else $ALLOWROOTLOGIN; then
+elif $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin no/PermitRootLogin yes/" $SSHDCONF
 fi
 
