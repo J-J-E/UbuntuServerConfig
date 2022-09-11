@@ -10,6 +10,7 @@
 # Change "true" to "false" to ignore software setup
 
 #######
+##TODO: ADD OPENPORTS,CLOSEPORTS VARIABLE TO UFW TO ALLOW MORE PORT CUSTOMIZATION
 #######
 
 # Required only in the first time to execute this script
@@ -23,12 +24,10 @@ DOCKER=true
 DOCKERIO=true
 DOCKERCOMPOSE=true
 
-
 #Auto Mount network drive, suppy path and true/false
 MOUNT_NFS=false
 AUTO_MOUNT_NFS=false
 NFS_PATH="" 
-
 
 # build-essential, git, curl, libs
 REQUIRED=false
@@ -61,7 +60,6 @@ UFWSSHRULE=true
 ALLOWROOTLOGIN=true
 ALLOWPASSAUTH=true
 
-
 #Firewall Configuration
 # a rule will be auto configured for the ssh if a new default
 # was specified above
@@ -71,13 +69,13 @@ CLOSEPORTS=
 UFWENABLE=true
 FAIL2BAN=true
 
-
 #Set Timezone
-SERVERTZ=America/Phoenix
-
+SETTIMEZONE=true
+TZ=America/Phoenix
 
 #Set Hostname
-SVRHOSTNM=
+SETHOSTNAME=true
+HOSTNAME=ehlen.xyz
 
 # paths
 LOG_SCRIPT=./log_script.txt
@@ -172,7 +170,6 @@ if $ADDUSER; then
 		egrep "^$USERNAME" /etc/passwd >/dev/null
 		if [ $? -eq 0 ]; then
 			echo "$USERNAME exists!"
-			exit 1
 		else
 			pass=$(perl -e 'print crypt($ARGV[0], "password")' $USERPASS)
 			sudo useradd -m -p "$pass" "$USERNAME"
@@ -187,7 +184,6 @@ if $ADDUSER; then
 		fi
 	else
 		echo "Only root may add a user to the system."
-		exit 2
 	fi
 fi
 
@@ -298,18 +294,19 @@ if $HTTPPORTS;then
 fi
 
 if $FAIL2BAN;then
-	sudo apt install fail2ban
+	sudo apt install fail2ban -y
 	sudo systemctl enable fail2ban --now
 fi
 
 
 #Set Timezone
-if $SERVERTZ;then
-	sudo timedatectl set-timezone $SERVERTZ
+if $SETTIMEZONE; then
+        sudo timedatectl set-timezone $TZ
 fi
 
 
 #Set Hostname
-if $SVRHOSTNM;then
-	sudo hostnamectl set-hostname  $SVRHOSTNM
+if $SETHOSTNAME; then
+        sudo hostnamectl set-hostname $HOSTNAME
 fi
+
