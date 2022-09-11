@@ -187,10 +187,6 @@ if $ADDUSER; then
 	fi
 fi
 
-#Add User
-
-
-COPYROOTSSH=false
 
 if $CONFIGURE_GITHUB;then
   sudo rm $GITCONFIG || echo "$GITCONFIG didn't exist, couldn't remove. Continuing."
