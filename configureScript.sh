@@ -74,8 +74,8 @@ SETTIMEZONE=true
 TZ=America/Phoenix
 
 #Set Hostname
-SETHOSTNAME=true
-HOSTNAME=ehlen.xyz
+SETHOSTNAME=false
+HOSTNAME=
 
 # paths
 LOG_SCRIPT=./log_script.txt
