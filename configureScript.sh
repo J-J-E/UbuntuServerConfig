@@ -276,6 +276,7 @@ fi
 
 if ! $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
+	sudo systemctl reload sshd
 elif $ALLOWROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin no/PermitRootLogin yes/" $SSHDCONF
 fi
@@ -283,6 +284,7 @@ fi
 
 if ! $ALLOWPASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDCONF
+	sudo systemctl reload sshd
 elif $ALLOWPASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDCONF
 fi
