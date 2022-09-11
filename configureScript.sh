@@ -180,6 +180,8 @@ if $ADDUSER; then
 			
 			if COPYROOTSSH; then 
 				sudo cp /root/.ssh/authorized_keys /home/$USERNAME/.ssh/authorized_keys
+				sudo chmod 600 /home/$USERNAME/.ssh/authorized_keys
+				sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
 			fi
 		fi
 	else
