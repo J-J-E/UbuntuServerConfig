@@ -11,6 +11,7 @@
 
 #######
 ##TODO: ADD OPENPORTS,CLOSEPORTS VARIABLE TO UFW TO ALLOW MORE PORT CUSTOMIZATION
+##TODO:Optional passwordless sudo access for created user
 #######
 
 # Required only in the first time to execute this script
