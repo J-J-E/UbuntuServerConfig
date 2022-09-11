@@ -27,7 +27,8 @@ DOCKERCOMPOSE=false
 #Auto Mount network drive, suppy path and true/false
 MOUNT_NFS=false
 AUTO_MOUNT_NFS=false
-NFS_PATH=""
+NFS_PATH="" 
+
 
 # build-essential, git, curl, libs
 REQUIRED=false
@@ -56,6 +57,7 @@ COPYROOTSSH=false
 #SSH Configuration
 SETSSH=false
 SSHPORT=22
+UFWSSHRULE=true
 ROOTLOGIN=true
 PASSAUTH=true
 
@@ -267,6 +269,10 @@ if $SETSSH;then
 	sudo sed -i "s/#Port 22/Port $SSHPORT/" $SSHDCONF
 fi
 
+if $UFWSSHRULE;then
+	sudo ufw allow $SSHPORT/tcp
+fi
+
 
 if ! $ROOTLOGIN; then
 	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" $SSHDCONF
@@ -279,5 +285,18 @@ if ! $PASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDCONF
 elif $PASSAUTH; then
 	sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDCONF
+fi
+
+
+
+#Firewall Configuration
+
+if $HTTPPORTS;then
+	sudo ufw allow proto tcp from any to any port 80,443
+fi
+
+if $FAIL2BAN;then
+	sudo apt install fail2ban
+	sudo systemctl enable fail2ban --now
 fi
 
