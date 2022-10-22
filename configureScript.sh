@@ -52,7 +52,9 @@ ADDUSER=false
 USERNAME=
 USERPASS=
 USERGRPS=adm,sudo
+#CAUTION WITH SECURITY CONFIG BELOW
 COPYROOTSSH=false
+PASSWORDLESSSUDO=false
 
 #SSH Configuration
 SETSSH=false
@@ -84,6 +86,7 @@ SSHCONFIG="$SSH_FOLDER/config"
 DOWNLOADS=~/Downloads
 BASHRC=~/.bashrc
 SSHDCONF=/etc/ssh/sshd_config
+SUDOERS=/etc/sudoers
 
 
 function aptinstall {
@@ -180,6 +183,11 @@ if $ADDUSER; then
 				sudo cp /root/.ssh/authorized_keys /home/$USERNAME/.ssh/authorized_keys
 				sudo chmod 600 /home/$USERNAME/.ssh/authorized_keys
 				sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
+			fi
+			
+			if $PASSWORDLESSSUDO; then 
+				sudo echo "$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL" >> $SUDOERS
+
 			fi
 		fi
 	else
