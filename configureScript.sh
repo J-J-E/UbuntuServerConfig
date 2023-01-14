@@ -76,7 +76,10 @@ TZ=America/Phoenix
 
 #Set Hostname
 SETHOSTNAME=false
+INSTALSSLCERT=false
+RENEWSSLCERT=false
 HOSTNAME=
+
 
 # paths
 LOG_SCRIPT=./log_script.txt
@@ -322,3 +325,12 @@ if $SETHOSTNAME; then
         sudo hostnamectl set-hostname $HOSTNAME
 fi
 
+#Set Hostname
+if $INSTALSSLCERT; then
+	sudo apt update && sudo apt install certbot -y
+	sudo apt-get install python3-certbot-nginx
+	sudo certbot --nginx -d $HOSTNAME
+	if $RENEWSSLCERT; then
+		line="0 0 1 * * certbot renew --quiet"
+		(crontab -u $(whoami) -l; echo "$line" ) | crontab -u $(whoami) -
+fi
