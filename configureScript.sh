@@ -29,6 +29,8 @@ DOCKERCOMPOSE=true
 MOUNT_NFS=false
 AUTO_MOUNT_NFS=false
 NFS_PATH="" 
+#Example path Structure = "ipAddress:/ShareName /LocalPathName FileSystemType defaults 0 0"
+#Example path ="0.144.228.2:/folder /nfsmount nfs defaults 0 0"
 
 # build-essential, git, curl, libs
 REQUIRED=false
